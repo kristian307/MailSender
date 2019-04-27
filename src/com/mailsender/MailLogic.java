@@ -7,8 +7,7 @@ import java.util.Properties;
 
 public class MailLogic {
 
-    private String  username;
-    private String  password;
+    private MailUser mailUser;
 
     private Properties props;
 
@@ -21,24 +20,18 @@ public class MailLogic {
         props.put("mail.debug", "true");
     }
 
-    public void setUser(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public void setUser(MailUser user) {
+        this.mailUser = user;
     }
 
     public void sendEmail(String sendTo, String subject, String text) {
-        Session session = Session.getInstance(props,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(username, password);
-                    }
-                });
+        Session session = setSession();
 
         try {
 
             Message message = new MimeMessage(session);
 
-            Address from = new InternetAddress(username);
+            Address from = new InternetAddress(mailUser.getUsername());
             Address to   = new InternetAddress(sendTo);
 
             message.setFrom(from);
@@ -51,6 +44,17 @@ public class MailLogic {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Session setSession() {
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(mailUser.getUsername(), mailUser.getPassword());
+                    }
+                });
+
+        return session;
     }
 
 }
