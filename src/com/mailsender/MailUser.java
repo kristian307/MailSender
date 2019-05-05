@@ -36,7 +36,7 @@ public class MailUser {
         return SMTPServer;
     }
 
-    // TODO: стоит сделать map SMTP-серверов
+    // TODO: 05.05.2019 стоит сделать map SMTP-серверов 
     public void setSMTPServer() {
         SMTPPort = 587;
 

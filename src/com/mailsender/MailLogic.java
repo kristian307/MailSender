@@ -39,6 +39,7 @@ public class MailLogic {
         }
     }
 
+    // TODO: 05.05.2019 избавиться от этой хрени, перенести в другой класс, возможно, в MailConnection 
     public Session setSession() {
         Session session = Session.getInstance(connection.getProperties(),
                 new javax.mail.Authenticator() {
