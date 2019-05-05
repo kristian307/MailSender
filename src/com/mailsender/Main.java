@@ -7,8 +7,7 @@ public class Main {
 
         MailUser user = new MailUser("", "");
 
-        mailLogic.setProperties("smtp.gmail.com", 587,true,true);
-        mailLogic.setUser(user);
+        mailLogic.setConnection(user);
         mailLogic.sendEmail("sam.distortion@gmail.com", "SSSUBJECT", "another test");
     }
 }

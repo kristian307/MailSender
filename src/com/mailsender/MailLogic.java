@@ -3,25 +3,16 @@ package com.mailsender;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 public class MailLogic {
 
     private MailUser mailUser;
 
-    private Properties props;
+    private MailConnection connection;
 
-    public void setProperties(String SMTPServer, int SMTPPort, boolean startTLSEnabled, boolean SMTPAuth) {
-        props = new Properties();
-        props.put("mail.smtp.auth", SMTPAuth);
-        props.put("mail.smtp.starttls.enable", startTLSEnabled);
-        props.put("mail.smtp.host", SMTPServer);
-        props.put("mail.smtp.port", SMTPPort);
-        props.put("mail.debug", "true");
-    }
-
-    public void setUser(MailUser user) {
+    public void setConnection(MailUser user) {
         this.mailUser = user;
+        connection = new MailConnection(user);
     }
 
     public void sendEmail(String sendTo, String subject, String text) {
@@ -29,15 +20,17 @@ public class MailLogic {
 
         try {
 
+            MailLetter email = new MailLetter(subject, text, mailUser, sendTo);
+
             Message message = new MimeMessage(session);
 
             Address from = new InternetAddress(mailUser.getUsername());
-            Address to   = new InternetAddress(sendTo);
+            Address to   = new InternetAddress(email.getEmailRecipient());
 
             message.setFrom(from);
             message.setRecipient(Message.RecipientType.TO, to);
-            message.setSubject(subject);
-            message.setText(text);
+            message.setSubject(email.getSubject());
+            message.setText(email.getText());
 
             Transport.send(message);
 
@@ -47,7 +40,7 @@ public class MailLogic {
     }
 
     public Session setSession() {
-        Session session = Session.getInstance(props,
+        Session session = Session.getInstance(connection.getProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(mailUser.getUsername(), mailUser.getPassword());
